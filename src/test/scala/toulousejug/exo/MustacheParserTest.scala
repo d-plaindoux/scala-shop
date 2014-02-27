@@ -1,10 +1,11 @@
 package toulousejug.exo
 
 import org.specs2.mutable._
+import scala.util.parsing.combinator.lexical.{Lexical, Scanners}
 
 object MustacheParserTest extends Specification {
 
-  "Moustache expressions parser" should {
+  "Mustache expressions parser" should {
 
     "recognize a simple identifier" in {
       val parsed = MustacheParser.parseAll(MustacheParser.value, """{{ident}}""")
@@ -13,4 +14,5 @@ object MustacheParserTest extends Specification {
 
     // To be continued
   }
+
 }

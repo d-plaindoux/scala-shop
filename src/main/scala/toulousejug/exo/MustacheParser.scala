@@ -1,6 +1,7 @@
 package toulousejug.exo
 
 import toulousejug.parsers.core.CoreTokenParsers
+import scala.util.parsing.combinator.{JavaTokenParsers, PackratParsers}
 
 /**
  * Moustache parser using Scala parsers combinator
@@ -28,7 +29,8 @@ object MustacheParser extends CoreTokenParsers {
     ???
 
   // 5 - {{START END}} defining start/end literal
-  def startEndLit = ???
+  def startEndLit =
+    ???
 
   // 6 - Default separators injected if necessary
 

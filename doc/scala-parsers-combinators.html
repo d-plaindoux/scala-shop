@@ -144,7 +144,7 @@
 	      <li> <b>a | b</b> parser pour le choix (non commutatif) </li>
 	      <li> <b>a.?</b> parser pour le caractère optionel </li>
 	      <li> <b>a.*</b> parser pour le caractère multiple </li>
-	      <li> <b>repsep(a,",")</b> multiple avec le séparateur "," </li>
+	      <li> <b>repsep(a,b)</b> multiple <b>a</b> avec le séparateur <b>b</b> </li>
 	    </ul>
 	    <br><br>
 	    DSL pour une approche déclarative des analyseurs
@@ -191,6 +191,16 @@
 	  </div>	  
 	</section>
 	<section>
+	  <h4>Limitation du backtrack</h4>
+	  <div class="p" style="text-align:left"> 
+	    Optimisation basée sur la suppression d'alternative
+	    <ul>
+	      <li> <b>a ~! b</b> pour un séquence sans backtrack </li>
+	      <li> Speedup par coupure de branches de choix </li>
+	    </ul>
+	  </div>	  
+	</section>
+	<section>
 	  <h4>PackratParser</h4>
 	  <div class="p" style="text-align:left"> 
 	    Optimisation basée sur la mémoïsation
@@ -199,25 +209,17 @@
 	      <li> Speedup du fait d'une compléxité linéaire </li>
 	    </ul>
 	    <br><br>
-	    Prise en charge la récursion gauche
-	    <pre><code class="Java"> 
- object MyParser extends JavaTokenParsers with PackratParsers {
-  def expr: Parser[Any] = integer | expr
-  def integer = decimalNumber ^^ { case e => EInt(e.toInt) }
-  def infix   = expr~OP~expr  ^^ { case e1~"+"~e2 => EAdd(e1, e2)}
-  def OP      = "+" | "-"
- }
-	  </pre></code>
-	  </div>	  
-	</section>
-	<section>
-	  <h4>Limitation du backtrack</h4>
-	  <div class="p" style="text-align:left"> 
-	    Optimisation basée sur la suppression d'alternative
-	    <ul>
-	      <li> <b>a ~! b</b> pour un séquence sans backtrack </li>
-	      <li> Speedup par coupure de branches de choix </li>
-	    </ul>
+	    <pre><code class="Java">
+object MyParser extends JavaTokenParsers with PackratParsers {
+  <u>lazy val</u> expr: PackratParser[Any] = infix | integer | group
+  def group   = "(" ~> expr <~ ")"
+  def integer = decimalNumber
+  def infix   = expr ~ OP ~ expr
+  def OP      = "+"
+}
+	  </pre></code>				    
+	    <br>
+	    Elimination de la récusivité à gauche reste 
 	  </div>	  
 	</section>
 	<section>
@@ -230,10 +232,11 @@
 	    <br><br>
 	    <pre><code class="Java"> 
  object MyParser extends JavaTokenParsers with PackratParsers {
-  def expr: Parser[Int] = integer | expr
-  def integer = decimalNumber    ^^ { case e       => e.toInt  }
-  def infix   = expr ~ OP ~ expr ^^ { case e1~f~e2 => f(e1,e2) }
-  def OP      = "+"              ^^ (_ => (x:Int, y:Int) => x+y)
+  lazy val expr: PackratParser[Int] = infix | integer | group
+  def group   = "(" ~> expr <~ ")"
+  def integer = decimalNumber  ^^ { case e       => e.toInt  }
+  def infix   = expr ~OP~ expr ^^ { case e1~f~e2 => f(e1,e2) }
+  def OP      = "+"            ^^ (_ => (x:Int, y:Int) => x+y)
  } 
 	      </Code></pre>
 	  </div>	  
@@ -249,10 +252,11 @@
  case class EAdd(left:Int,right:Int) extends EExp
 
  object MyParser extends JavaTokenParsers with PackratParsers {
-  def expr: Parser[EExp] = integer | expr
-  def integer = decimalNumber ^^ { case e => EInt(e.toInt) }
-  def infix   = expr~OP~expr  ^^ { case e1~f~e2 => f(e1, e2)}
-  def OP      = "+"           ^^ EAdd
+  lazy val expr: PackratParser[EExp] = infix | integer | group
+  def group   = "(" ~> expr <~ ")"
+  def integer = decimalNumber  ^^ { case e       => e.toInt  }
+  def infix   = expr ~OP~ expr ^^ { case e1~f~e2 => f(e1,e2) }
+  def OP      = "+"            ^^ EAdd
  }
 	      </code></pre>
 	    <br>
@@ -269,10 +273,11 @@
  case class EAdd(left:Int,right:Int) extends EExp
 
  object MyParser extends JavaTokenParsers with PackratParsers {
-  def expression: Parser[EExp] = integer | expr
+  def expression: Parser[EExp] = integer | group | expr 
   def integer = 
     <u>positioned</u>(decimalNumber) ^^ { case e => EInt(e.toInt) }
-  def infix = 
+  def group   = "(" ~> expr <~ ")" 
+  def infix   = 
     <u>positioned</u>(expr~OP~expr)  ^^ { case e1~"f"~e2 => f(e1, e2)}
   def OP      = "+"                  ^^ EAdd
 
