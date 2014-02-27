@@ -176,7 +176,7 @@
 	<section>
 	  <h4>Notre premier Parser</h4> 
 	  <div class="p" style="text-align:left"> 
-	    Definition des expression d'un langage à la Javascript
+	    Définition des expressions d'un langage à la Javascript
 	  <pre><code class="Java">
  expression ::=
    INT 
@@ -199,7 +199,7 @@
 	      <li> Speedup du fait d'une compléxité linéaire </li>
 	    </ul>
 	    <br><br>
-	    Prend en charge la récursion gauche
+	    Prise en charge la récursion gauche
 	    <pre><code class="Java"> 
  object MyParser extends JavaTokenParsers with PackratParsers {
   def expr: Parser[Any] = integer | expr
@@ -215,15 +215,15 @@
 	  <div class="p" style="text-align:left"> 
 	    Optimisation basée sur la suppression d'alternative
 	    <ul>
-	      <li> <b>a ~! b</b> pour un sequence sans backtrack </li>
+	      <li> <b>a ~! b</b> pour un séquence sans backtrack </li>
 	      <li> Speedup par coupure de branches de choix </li>
 	    </ul>
 	  </div>	  
 	</section>
 	<section>
-	  <h4>Production sur mesure</h4>
+	  <h4>Production de résultat</h4>
 	  <div class="p" style="text-align:left"> 
-	    Possibilité d'évaluer un résultat au fil de l'analyse
+	    Evaluation un résultat au fil de l'analyse
 	    <ul>
 	      <li> <b>a ^^ production</b> pour une évaluation </li>
 	    </ul>
@@ -239,9 +239,9 @@
 	  </div>	  
 	</section>
 	<section>
-	  <h4>Production sur mesure</h4>
+	  <h4>Production de résultat</h4>
 	  <div class="p" style="text-align:left"> 
-	    Utilisé plus généralement pour la construction d'AST
+	    utilisation plus générale pour la construction d'AST
 	    <br><br>
 	    <pre><code class="Java"> 
  sealed trait EExp
@@ -282,30 +282,30 @@
 	<section>
 	  <h4>Notre second Parser</h4> 
 	  <div class="p" style="text-align:left"> 
-	    Définition d'un langage non-régulier: Moustache
+	    Définition d'un langage non-régulier: Mustache
 	    <br><br>
 	  <pre><code class="Java">
- moustache ::=
+ mustache ::=
    expression*
  
  expression ::= 
-   "{{" id "}}"  			 - Value
- | "{{{" id "}}}"			 - Escaped Value
- | "{{#" id "}}" moustache "{{/" id "}}" - Enter when value
- | "{{^" id "}}" moustache "{{/" id "}}" - Enter when not value
+   "{{" id "}}"  			- Value
+ | "{{{" id "}}}"		        - Escaped Value
+ | "{{#" id "}}" mustache "{{/" id "}}" - Enter when value
+ | "{{^" id "}}" mustache "{{/" id "}}" - Enter when not value
  | "{{!" comment "}}"			
- | (text - "{{")			 - Free text
- | "{{"Op space Op"}}"                   - New separators
+ | (text - "{{")			- Free text
+ | "{{"Op space Op"}}"                  - New separators
 	  </pre></code>
 	  </div>	  
 	</section>
 	<section>
 	  <h4>Sequence paramétrique</h4> 
 	  <div class="p" style="text-align:left"> 
-	    Capturer ce qui est déjà analyser dans la séquence afin de l'utiliser ...
+	    Capturer ce qui est déjà analysé dans la séquence afin de l'utiliser plus tard
 	    <br><br>
 	    <ul>
-	      <li> <b>a >> (e => b)</b> ou <b>e</b> représente les éléments provenant de <b>a</b> </li>
+	      <li> <b>a >> (e => b)</b> ou <b>e</b> représente les éléments qui proviennent de <b>a</b> </li>
 	    </ul>
 	</section>	
 	<section>
