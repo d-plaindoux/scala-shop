@@ -76,10 +76,10 @@
 	  <div class="p" style="text-align:left"> 
 	    <ul>
 	      <li type="none">
-		Parsers combinator proposés dans le langage
+		Combinateurs de parsers proposés dans le langage
 		<ul>
-		  <li> Haskell à partir des travaux de P. Wadler </li>
-		  <li> Scala <tt>Parsers</tt> </li>
+		  <li> Haskell à partir des travaux de Phillip Wadler </li>
+		  <li> Scala <tt>Parsers</tt> comme librairie standard </li>
 		</ul>
 		<br>
 		Ensemble de parsers primitifs
@@ -103,8 +103,8 @@
 		<ul>
 		  <li> intégration dans les IDEs </li>
 		  <li> possibilité de Refactoring </li>
-		  <li> Approche Test Driven Design </li>
-		  <li> Top/Down ou Bottom/Up </li>
+		  <li> approche Test Driven Design </li>
+		  <li> top/down et/ou bottom/up </li>
 		</ul>
 	      </li>
 	    </ul>
@@ -136,7 +136,7 @@
 	<section>
 	  <h4>Combinateurs</h4> 
 	  <div class="p" style="text-align:left"> 
-	    Parser[+T] propose un ensemble de combinateurs.
+	    Parser[+T] propose déjà un ensemble de combinateurs.
 	    <br><br>
 	    Soient <b>a</b> et <b>b</b> des parsers:
 	    <ul>
@@ -223,7 +223,7 @@
 	<section>
 	  <h4>Production de résultat</h4>
 	  <div class="p" style="text-align:left"> 
-	    Evaluation un résultat au fil de l'analyse
+	    Evaluation d'un résultat au fil de l'analyse
 	    <ul>
 	      <li> <b>a ^^ production</b> pour une évaluation </li>
 	    </ul>
@@ -241,7 +241,7 @@
 	<section>
 	  <h4>Production de résultat</h4>
 	  <div class="p" style="text-align:left"> 
-	    utilisation plus générale pour la construction d'AST
+	    Utilisation plus générale pour la construction d'AST
 	    <br><br>
 	    <pre><code class="Java"> 
  sealed trait EExp
@@ -252,7 +252,7 @@
   def expr: Parser[EExp] = integer | expr
   def integer = decimalNumber ^^ { case e => EInt(e.toInt) }
   def infix   = expr~OP~expr  ^^ { case e1~f~e2 => f(e1, e2)}
-  def OP      = "+" ^^ EAdd
+  def OP      = "+"           ^^ EAdd
  }
 	      </code></pre>
 	    <br>
@@ -273,7 +273,9 @@
   def integer = 
     <u>positioned</u>(decimalNumber) ^^ { case e => EInt(e.toInt) }
   def infix = 
-    <u>positioned</u>(expr~OP~expr)  ^^ { case e1~"+"~e2 => EAdd(e1, e2)}
+    <u>positioned</u>(expr~OP~expr)  ^^ { case e1~"f"~e2 => f(e1, e2)}
+  def OP      = "+"                  ^^ EAdd
+
  }
 	      </code></pre>
 	    <br>
