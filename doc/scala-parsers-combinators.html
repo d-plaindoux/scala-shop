@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+      <title>Scala Parser Combinators</title>
+
+      <meta name="description" content="Scala Parser Combinators" />
+      <meta name="author" content="Didier Plaindoux" />
+	  
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+      <link rel="stylesheet" href="css/reveal.css">
+      <link rel="stylesheet" href="css/theme/sky.css" id="theme">
+
+      <!-- For syntax highlighting --> 
+      <link rel="stylesheet" href="lib/css/zenburn.css">
+      <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+	document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+      </script>
+
+      <!--[if lt IE 9]>
+      <script src="lib/js/html5shiv.js"></script>
+      <![endif]-->
+  </head>
+
+  <body>
+    
+    <div class="reveal">
+      
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+	
+	<section>
+	  <h2>Scala Parser Combinators</h2>
+	  <br/>
+	    <div class="p" style="text-align:middle"><small> 27 fevrier 2014 </small></div>
+	    <div class="p" style="text-align:middle"><small><b> Toulouse JUG </b></small></div>
+	    <div class="p" style="text-align:middle">
+	      <small>
+		<a href="http://d.plaindoux.free.fr">Didier Plaindoux</a>
+	        (<a href="http://twitter.com/dplaindoux">@dplaindoux</a>)
+	      </small> 
+	    </div>
+	</section>
+      
+	<section>
+	  <h4>Approche orientée Outils</h4>
+	  <div class="p" style="text-align:left"> 
+	    <ul>
+	      <li type="none">
+		Analyseurs lexicaux "traditionnels"
+		<ul>
+		  <li> Bison, Lex/Yacc </li>
+		  <li> OcamlYacc/OcamlLex, Menhir </li>
+		  <li> ANTLR, JavaCC, SableCC </li>
+		</ul>
+		<br>
+		Méthode de développement 
+		<ul>
+		  <li> Ecriture du parser/lexer </li>
+		  <li> Génération du code </li>
+		  <li> Compilation du code (ou pas !) </li>
+		  <li> et les tests / approche top/down </li>
+		</ul>		
+	      </li>
+	    </ul>
+	  </div>
+	</section>
+
+	<section>
+	  <h4>Approche orientée librairie</h4> 
+	  <div class="p" style="text-align:left"> 
+	    <ul>
+	      <li type="none">
+		Parsers combinator proposés dans le langage
+		<ul>
+		  <li> Haskell à partir des travaux de P. Wadler </li>
+		  <li> Scala <tt>Parsers</tt> </li>
+		</ul>
+		<br>
+		Ensemble de parsers primitifs
+		<ul>
+		  <li> Composables par le biais d'opérateurs </li>
+		  <li> Structures monadiques (combinabilité) </li>
+		  <li> Analyse avec backtrack </li>
+		  <li> Cible des grammaires dites LL(*) </li>
+		</ul>		
+	      </li>
+	    </ul>
+	  </div>	  
+	</section>
+
+	<section>
+	  <h4>Approche orientée librairie et Methodologie</h4> 
+	  <div class="p" style="text-align:left"> 
+	    <ul>
+	      <li type="none">
+		Partie intégrante du langage
+		<ul>
+		  <li> intégration dans les IDEs </li>
+		  <li> possibilité de Refactoring </li>
+		  <li> Approche Test Driven Design </li>
+		  <li> Top/Down ou Bottom/Up </li>
+		</ul>
+	      </li>
+	    </ul>
+	  </div>	  
+	</section>
+
+	<section>
+	  <h4>Anatomie des Parsers</h4> 
+	  <div class="p" style="text-align:left"> 
+	  <pre><code class="Java">
+ trait Parsers {
+  /* the type of input elements and the parser input */
+  type Elem
+  type Input = Reader[Elem]
+
+  /* Class base for the result */ 
+  sealed abstract class ParseResult[+T]
+  case class Success[+T](r:T,n:Input) extends ParseResult[T]
+  case class Failure(m:tring,n:Input) extends ParseResult[Nothing]
+ 
+  /* Parsers are functions from the Input type to ParseResult. */
+  abstract class Parser[+T] extends (Input => ParseResult[T]) {
+   def apply(in: Input): ParseResult[T]
+  }
+ }
+	  </pre></code>
+	  </div>	  
+	</section>
+	<section>
+	  <h4>Combinateurs</h4> 
+	  <div class="p" style="text-align:left"> 
+	    Parser[+T] propose un ensemble de combinateurs.
+	    <br><br>
+	    Soient <b>a</b> et <b>b</b> des parsers:
+	    <ul>
+	      <li> <b>a ~ b</b> parser pour la séquence </li>
+	      <li> <b>a | b</b> parser pour le choix (non commutatif) </li>
+	      <li> <b>a.?</b> parser pour le caractère optionel </li>
+	      <li> <b>a.*</b> parser pour le caractère multiple </li>
+	      <li> <b>repsep(a,",")</b> multiple avec le séparateur "," </li>
+	    </ul>
+	    <br><br>
+	    DSL pour une approche déclarative des analyseurs
+	  </div>	  
+	</section>
+	<section>
+	  <h4>Parsers existants</h4> 
+	  <div class="p" style="text-align:left"> 
+
+	  <pre><code class="Java">
+ trait RegexParsers extends Parsers {
+  type Elem = Char
+
+  implicit def literal(s: String): Parser[String]
+  implicit def regex(s: Regex): Parser[String]
+ }
+	  </pre></code>
+	  <pre><code class="Java">
+ trait JavaTokenParsers extends RegexParsers {
+  def ident: Parser[String]
+  def wholeNumber: Parser[String]
+  def decimalNumber: Parser[String]
+  def stringLiteral: Parser[String]
+  def floatingPointNumber: Parser[String]
+ }
+	  </pre></code>
+	  </div>	  
+	</section>
+	<section>
+	  <h4>Notre premier Parser</h4> 
+	  <div class="p" style="text-align:left"> 
+	    Definition des expression d'un langage à la Javascript
+	  <pre><code class="Java">
+ expression ::=
+   INT 
+ | STRING 
+ | IDENT
+ | "(" expression ")"
+ | "[" optrep(",", expression) "]"
+ | "{" optrep(",",(IDENT | STRING) ":" expression) "}"
+ | IDENT "(" optrep(",", expression) ")"
+ | expression OPERATOR expression
+	  </pre></code>
+	  </div>	  
+	</section>
+	<section>
+	  <h4>PackratParser</h4>
+	  <div class="p" style="text-align:left"> 
+	    Optimisation basée sur la mémoïsation
+	    <ul>
+	      <li> Mémorisation des résultats </li>
+	      <li> Speedup du fait d'une compléxité linéaire </li>
+	    </ul>
+	    <br><br>
+	    Prend en charge la récursion gauche
+	    <pre><code class="Java"> 
+ object MyParser extends JavaTokenParsers with PackratParsers {
+  def expr: Parser[Any] = integer | expr
+  def integer = decimalNumber ^^ { case e => EInt(e.toInt) }
+  def infix   = expr~OP~expr  ^^ { case e1~"+"~e2 => EAdd(e1, e2)}
+  def OP      = "+" | "-"
+ }
+	  </pre></code>
+	  </div>	  
+	</section>
+	<section>
+	  <h4>Limitation du backtrack</h4>
+	  <div class="p" style="text-align:left"> 
+	    Optimisation basée sur la suppression d'alternative
+	    <ul>
+	      <li> <b>a ~! b</b> pour un sequence sans backtrack </li>
+	      <li> Speedup par coupure de branches de choix </li>
+	    </ul>
+	  </div>	  
+	</section>
+	<section>
+	  <h4>Production sur mesure</h4>
+	  <div class="p" style="text-align:left"> 
+	    Possibilité d'évaluer un résultat au fil de l'analyse
+	    <ul>
+	      <li> <b>a ^^ production</b> pour une évaluation </li>
+	    </ul>
+	    <br><br>
+	    <pre><code class="Java"> 
+ object MyParser extends JavaTokenParsers with PackratParsers {
+  def expr: Parser[Int] = integer | expr
+  def integer = decimalNumber    ^^ { case e       => e.toInt  }
+  def infix   = expr ~ OP ~ expr ^^ { case e1~f~e2 => f(e1,e2) }
+  def OP      = "+"              ^^ (_ => (x:Int, y:Int) => x+y)
+ } 
+	      </Code></pre>
+	  </div>	  
+	</section>
+	<section>
+	  <h4>Production sur mesure</h4>
+	  <div class="p" style="text-align:left"> 
+	    Utilisé plus généralement pour la construction d'AST
+	    <br><br>
+	    <pre><code class="Java"> 
+ sealed trait EExp
+ case class EInt(value:Int) extends EExp
+ case class EAdd(left:Int,right:Int) extends EExp
+
+ object MyParser extends JavaTokenParsers with PackratParsers {
+  def expr: Parser[EExp] = integer | expr
+  def integer = decimalNumber ^^ { case e => EInt(e.toInt) }
+  def infix   = expr~OP~expr  ^^ { case e1~f~e2 => f(e1, e2)}
+  def OP      = "+" ^^ EAdd
+ }
+	      </code></pre>
+	    <br>
+	  </div>	  
+	</section>
+	<section>
+	  <h4>Injection de la localisation</h4>
+	  <div class="p" style="text-align:left"> 
+	    Possibilité de combiner le terme et sa localisation
+	    <br><br>
+	    <pre><code class="Java"> 
+ sealed trait EExp <u>extends Positional</u>
+ case class EInt(value:Int) extends EExp
+ case class EAdd(left:Int,right:Int) extends EExp
+
+ object MyParser extends JavaTokenParsers with PackratParsers {
+  def expression: Parser[EExp] = integer | expr
+  def integer = 
+    <u>positioned</u>(decimalNumber) ^^ { case e => EInt(e.toInt) }
+  def infix = 
+    <u>positioned</u>(expr~OP~expr)  ^^ { case e1~"+"~e2 => EAdd(e1, e2)}
+ }
+	      </code></pre>
+	    <br>
+	  </div>	  
+	</section>
+	<section>
+	  <h4>Notre second Parser</h4> 
+	  <div class="p" style="text-align:left"> 
+	    Définition d'un langage non-régulier: Moustache
+	    <br><br>
+	  <pre><code class="Java">
+ moustache ::=
+   expression*
+ 
+ expression ::= 
+   "{{" id "}}"  			 - Value
+ | "{{{" id "}}}"			 - Escaped Value
+ | "{{#" id "}}" moustache "{{/" id "}}" - Enter when value
+ | "{{^" id "}}" moustache "{{/" id "}}" - Enter when not value
+ | "{{!" comment "}}"			
+ | (text - "{{")			 - Free text
+ | "{{"Op space Op"}}"                   - New separators
+	  </pre></code>
+	  </div>	  
+	</section>
+	<section>
+	  <h4>Sequence paramétrique</h4> 
+	  <div class="p" style="text-align:left"> 
+	    Capturer ce qui est déjà analyser dans la séquence afin de l'utiliser ...
+	    <br><br>
+	    <ul>
+	      <li> <b>a >> (e => b)</b> ou <b>e</b> représente les éléments provenant de <b>a</b> </li>
+	    </ul>
+	</section>	
+	<section>
+	  <h4>Conclusion</h4> 
+	  <div class="p" style="text-align:left"> 
+	    Librairie standard très riche
+	    <br><br>
+	    <ul>
+	      <li> Performance inférieur aux analyseurs LALR etc. </li>
+	      <li> Très haut niveau d'expressivité </li>
+	      <li> Creusez les API et jouez ... </li>
+	    </ul>
+	</section>	
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+      controls: false,
+      progress: true,
+      history: true,
+      
+      theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+      transition: Reveal.getQueryHash().transition || 'concave', // default/cube/page/concave/zoom/linear/none
+
+      // Optional libraries used to extend on reveal.js
+      dependencies: [
+      { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+      { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+      { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+      { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+      ]
+      });
+
+    </script>
+
+  </body>
+</html>
