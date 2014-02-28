@@ -254,7 +254,7 @@ object MyParser extends JavaTokenParsers with PackratParsers {
  object MyParser extends JavaTokenParsers with PackratParsers {
   lazy val expr: PackratParser[EExp] = infix | integer | group
   def group   = "(" ~> expr <~ ")"
-  def integer = decimalNumber  ^^ { case e       => e.toInt  }
+  def integer = decimalNumber  ^^ { case e  => EInt(e.toInt) }
   def infix   = expr ~OP~ expr ^^ { case e1~f~e2 => f(e1,e2) }
   def OP      = "+"            ^^ EAdd
  }
@@ -278,7 +278,7 @@ object MyParser extends JavaTokenParsers with PackratParsers {
     <u>positioned</u>(decimalNumber) ^^ { case e => EInt(e.toInt) }
   def group   = "(" ~> expr <~ ")" 
   def infix   = 
-    <u>positioned</u>(expr~OP~expr)  ^^ { case e1~"f"~e2 => f(e1, e2)}
+    <u>positioned</u>(expr~OP~expr)  ^^ { case e1~f~e2 => f(e1, e2)}
   def OP      = "+"                  ^^ EAdd
 
  }
