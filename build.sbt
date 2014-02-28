@@ -15,4 +15,4 @@ libraryDependencies ++= Seq(
 
 fork in Test := true
 
-offline := true
+offline := false
