@@ -12,29 +12,31 @@ object MustacheParser extends CoreTokenParsers {
   def template: Parser[Any] =
     ???
 
-  // 1 - {{IDENT}}
+  // step 1 - {{IDENT}}
   def value =
     "{{" ~ identifierLit ~ "}}"
 
-  // 2 - {{{IDENT}}} -- escaped
+  // step 2 - {{{IDENT}}} -- escaped
   def escaped =
     ???
 
-  // 4 - {{#name}} ... {{/name}}
+  // step 4 - {{#name}} ... {{/name}}
   def thenBloc =
     ???
 
-  // 8 - Free text except start separator
+  // step 5 - Free text except start separator
   def textBloc =
     ???
 
-  // 5 - {{START END}} defining start/end literal
+  // step 6 - {{START END}} defining start/end literal
   def startEndLit =
     ???
 
-  // 6 - Default separators injected if necessary
+  // step 7 - Default separators
 
-  // 7 - Add separators
+  // step 8 - Implicit default separators
+
+  // step 9 - Add separators ..;
   def separators =
     ???
 
