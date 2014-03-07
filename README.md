@@ -24,7 +24,7 @@ How-to
 ------
 
 Exercises are in the directory named [exos](https://github.com/d-plaindoux/scala-shop/tree/master/src/main/scala/toulousejug/exo) 
-and directives are given by comments in the source code. In addition complete solution for both mini-language is also given in the directory [parsers](https://github.com/d-plaindoux/scala-shop/tree/master/src/main/scala/toulousejug/parsers).
+and directives are given by comments in the source code. In addition a complete solution for both mini-language is also given in the directory [parsers](https://github.com/d-plaindoux/scala-shop/tree/master/src/main/scala/toulousejug/parsers).
 
 In parallel a set of slides in french (using Reveal.js) are provided.
 
