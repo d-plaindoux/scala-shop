@@ -16,7 +16,7 @@ in different ways.
 
 The second language is inspired by Mustach. This case is a little more complex
 for two different reasons. First it's not a regular language and second its
-syntax can change during the analyze. For those two reasons this last case study
+syntax can change during the analysis. For those two reasons this last case study
 shows the possibilities offered by such a parser library and related concept
 like combinators ... and monads of course.
 
