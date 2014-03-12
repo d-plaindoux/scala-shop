@@ -4,7 +4,7 @@ import org.specs2.mutable._
 
 object MustacheParserTest extends Specification {
 
-  "Moustache expressions parser" should {
+  "Mustache expressions parser" should {
 
     "recognize a simple identifier" in {
       val parsed = MustacheParser.parseAll(MustacheParser.value, """{{ident}}""")
