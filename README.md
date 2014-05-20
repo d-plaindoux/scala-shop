@@ -14,11 +14,10 @@ The first one is inspired by Javacscript expressions and is by definition a regu
 language. The main difficulty can be the left recursion which can be managed
 in different ways.
 
-The second language is inspired by Mustach. This case is a little more complex
-for two different reasons. First it's not a regular language and second its
-syntax can change during the analysis. For those two reasons this last case study
-shows the possibilities offered by such a parser library and related concept
-like combinators ... and monads of course.
+The second language is inspired by Mustach. This case is a little bit more complex
+for two reasons. First it's not a regular language and second its syntax can change 
+during the analysis. For those two reasons this last case study shows the possibilities 
+offered by such a parser library and related concept like combinators ... and monads of course.
 
 How-to
 ------
