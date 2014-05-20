@@ -7,7 +7,7 @@ scala-shop
 Introduction
 ------------
 
-This the coding dojo introduces Scala parsers combinators standard library. 
+This coding dojo introduces Scala parsers combinators standard library. 
 This is done performing parsers for two different mini-languages. 
 
 The first one is inspired by Javacscript expressions and is by definition a regular 
